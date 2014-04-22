@@ -777,7 +777,12 @@ Network helper functions
 #def _request_with_retry(url, headers={}, data=None):
 def _get(url, headers={}, params=None):
     """Tries to GET data from an endpoint using retries"""
-    param_string = _foursquare_urlencode(params)
+    # In case of a multi request annoted by the existace of the requests paramter,
+    # don't consider '&' or ',' as safe chars and encode them too
+    if ( params.get('requests') ) :
+        param_string = _foursquare_urlencode(params, safe_chars='/+')
+    else :
+        param_string = _foursquare_urlencode(params)
     for i in xrange(NUM_REQUEST_RETRIES):
         try:
             try:
